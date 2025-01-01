@@ -55,6 +55,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 
+// 깃허브 테스트
+
 // 캐릭터 구현
 // 몬스터 구현
 // UI 구현
