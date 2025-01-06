@@ -4,6 +4,10 @@
 #include "framework.h"
 #include "Editor_Window.h"
 
+#include "..//JSEngine_SOURCE/jsApplication.h"
+
+
+Application app;
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -26,6 +30,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 여기에 코드를 입력합니다.
+    app.test();
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -42,21 +47,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    // 기본 메시지 루프입니다:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (true)
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+                break;
+
+            if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+        }
+        else
+        {
+            // 메세지가 없을 경우 여기서 처리 -> 게임 로직이 여기서 돌아감 ( 없으면 위의 함수로 처리 )
+
         }
     }
+
+    //while (GetMessage(&msg, nullptr, 0, 0))
+    //{
+    //    if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+    //    {
+    //        TranslateMessage(&msg);
+    //        DispatchMessage(&msg);
+    //    }
+    //}
 
     return (int) msg.wParam;
 }
 
 // 깃허브 테스트
-
 // 캐릭터 구현
 // 몬스터 구현
 // UI 구현
@@ -104,7 +127,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 960,540, 0, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -148,12 +171,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    //case WM_KEYDOWN:
+    //{
+
+    //}
+    break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+            HBRUSH redBrush = CreateSolidBrush(RGB(255,0,0));        
+            HPEN redPen = CreatePen(PS_SOLID,2,RGB(255,0,0));
+
+            HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, redBrush);  // 브러쉬를 빨강으로 바꾸고 기존 브러쉬를 저장
+            Rectangle(hdc,100,100,300,300 );        // 직사각형 그리기
+            (HBRUSH)SelectObject(hdc, oldBrush);    // 흰색 브러쉬로 다시 변경
+            DeleteObject(redBrush);                 // 메모리 관리를 위해 빨간 브러쉬 삭제
+
+
+            HPEN oldPen = (HPEN)SelectObject(hdc, redPen);
+            Ellipse(hdc, 400, 100, 600, 300);       // 타원 그리기
+            (HBRUSH)SelectObject(hdc, oldPen);    
+            DeleteObject(redPen);                 
+
+            HBRUSH grayBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
+
+            oldPen = (HPEN)SelectObject(hdc, grayBrush);
+            Rectangle(hdc, 400, 400, 500, 500);
+            (HBRUSH)SelectObject(hdc, oldPen);
+
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
             EndPaint(hWnd, &ps);
+        }
+        break;
+    case WM_LBUTTONDOWN:
+        {
+            int a = 0;
         }
         break;
     case WM_DESTROY:
